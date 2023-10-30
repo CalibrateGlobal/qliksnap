@@ -9,23 +9,23 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "https://sense1.calibrateconsulting.com",
+    origin: process.env.ALLOWED_ORIGIN,
     credentials: true,
   })
 );
 
-let userPool = [];
+// Use a single session for all requests and reuse session cookie until it expires
+let sessionCookie = {};
 
-app.post("/screenshot", async (req, res) => {
-  console.log("Taking screenshot");
-  console.log(req.body);
+let browser;
 
-  let browser;
-
+// Create browser instance and reuse it for each request
+const initBrowser = async () => {
+  // Need to specify chrome executable path when running in docker container
   if (process.env.DOCKER) {
     browser = await puppeteer.launch({
       headless: true,
-      executablePath: '/usr/bin/google-chrome', 
+      executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox", "--disable-gpu"],
     });
   } else {
@@ -34,110 +34,119 @@ app.post("/screenshot", async (req, res) => {
       args: ["--no-sandbox", "--disable-gpu"],
     });
   }
+};
 
+initBrowser();
+// Note: browser is never being "closed" (i.e. await browser.close())
+
+app.post("/screenshot", async (req, res) => {
+  console.log("Taking screenshot");
+  console.log(req.body);
+
+  // How to check for open page instances / tabs
+  // const openPages = await browser.pages();
+  // console.log(openPages);
+
+  // Creating the page instance for this request
   const page = await browser.newPage();
 
+  // Adding authorisation header and Xrf key to request
+  // This will create a session for the user associated with the "QLIK_TOKEN" jwt
   await page.setExtraHTTPHeaders({
     Authorization: `Bearer ${process.env.QLIK_TOKEN}`,
     "X-Qlik-Xrfkey": "abcdefghijklmnop",
-    // "Cookie": "X-Qlik-Session-jwt=0cc2516f-13d8-4cc8-9b5d-5b47689acc6a"
-    // "X-Qlik-Session-jwt": "513c911b-e87e-47f5-9b7d-29cea1f4658e",
   });
+  // Note: It is necessary to include the Authorisation header to every request in order to handle situations in which an existing session cookie
+  // may no longer be valid. The Auth header ensures that a new session cookie will be appended to the page in this scenario (which will then
+  // replace the session cookie stored above for the purposes of reusing sessions)
 
-  let tempUser = userPool.find((user) => user.userId === req.body.userId);
-
-  /*   const tempCookie = {
-    name: "X-Qlik-Session-jwt",
-    value: "513c911b-e87e-47f5-9b7d-29cea1f4658e",
-    domain: "sense1.calibrateconsulting.com",
-    path: "/",
-    expires: -1,
-    size: 54,
-    httpOnly: true,
-    secure: true,
-    session: true,
-    sameSite: "None",
-    sameParty: false,
-    sourceScheme: "Secure",
-    sourcePort: 443,
-  };
- */
-  if (tempUser && tempUser.sessionCookie) {
-    await page.setCookie(tempUser.sessionCookie);
+  // If a session cookie exists, add it to the request
+  // This ensures that the same session is used (rather than creating a new session for each request and exceeding the Qlik session limit)
+  if (sessionCookie && sessionCookie.value) {
+    await page.setCookie(sessionCookie);
   }
 
-  page.on("request", (request) => {
-    const headers = request.headers();
-    // console.log("headers", headers);
-  });
+  // How to check request headers
+  // page.on("request", (request) => {
+  //   const headers = request.headers();
+  // });
 
-  // Navigate the page to a URL
-  // await page.goto('https://developer.chrome.com/');
+  // Navigate the page to the URL supplied in the req body
   await page.goto(
     // "https://sense1.calibrateconsulting.com/jwt/sense/app/6729311b-f919-4bd2-93a8-872f7271856c/sheet/JzJMza/state/analysis",
     req.body.url,
+    // Wait for network activity to cease, as well as "load" and "domcontentloaded" events to fire before proceeding
     { waitUntil: ["networkidle0", "load", "domcontentloaded"] }
   );
 
-  // Set screen size
+  // Set viewport dimensions based an values in req body
   await page.setViewport({
     width: req.body.vpWidth,
     height: req.body.vpHeight,
   });
 
-  /* // Query for an element handle.
-  const element = await page.waitForSelector(".qs-skip-to-content-button");
-  const element2 = await page.waitForSelector(".qs-header");
-  const element3 = await page.waitForSelector("div[tid='qs-sub-toolbar']");
-
-  // Use evaluate method to remove element
-   await element.evaluate(el => el.remove());
-   await element2.evaluate(el => el.remove());
-   await element3.evaluate(el => el.remove()); */
-
-  for (item of req.body.exclusionArray) {
-    const element = await page.waitForSelector(item);
-    await element.evaluate((el) => el.remove());
+  // Wait for Qlik loading screen to disappear from page before continuing
+  try {
+    await page.waitForFunction(
+      () => {
+        const uiBlocker = document.getElementById("qv-init-ui-blocker");
+        if (!uiBlocker) {
+          return true;
+        }
+      },
+      { timeout: 10000 }
+    );
+  } catch (e) {
+    console.log("Error waiting for Qlik loading screen to disappear");
   }
 
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  await delay(1000);
+  // Iterate through selectors in exclusionArray
+  for (item of req.body.exclusionArray) {
+    try {
+      // Query page and wait for element handle
+      const element = await page.waitForSelector(item);
+      // Use evaluate method to remove element
+      await element.evaluate((el) => el.remove());
+    } catch (e) {
+      console.log(`Error removing selector: ${item}`, e);
+    }
+  }
 
+  // Get current page cookies
   const cookies = await page.cookies();
 
-  let tempSessionCookie = cookies.find(
-    (cookie) => cookie.name === "X-Qlik-Session-jwt"
-  );
+  // Generic Qlik session cookie name
+  let cookieName = "X-Qlik-Session";
 
+  // Append virtual proxy suffix to cookie name if present
+  if (process.env.QLIK_VP && process.env.QLIK_VP.length > 0) {
+    cookieName = `X-Qlik-Session-${process.env.QLIK_VP}`;
+  }
+
+  // Get the current Qlik session cookie (if present)
+  let tempSessionCookie = cookies.find((cookie) => cookie.name === cookieName);
+
+  // Replace session cookie if value does not match current page session cookie
   if (
-    tempUser &&
-    tempSessionCookie &&
-    tempSessionCookie.value !== tempUser.sessionCookie.value
+    (sessionCookie &&
+      sessionCookie.value &&
+      tempSessionCookie.value !== sessionCookie.value) ||
+    !sessionCookie.value ||
+    !sessionCookie
   ) {
-    tempUser.sessionCookie = tempSessionCookie;
+    sessionCookie = tempSessionCookie;
   }
 
-  if (tempUser) {
-    const userIndex = userPool.findIndex(
-      (user) => user.userId === tempUser.userId
-    );
-    userPool[userIndex] = tempUser;
-  } else if (req.body.userId && tempSessionCookie) {
-    userPool.push({
-      userId: req.body.userId,
-      sessionCookie: tempSessionCookie,
-    });
-  }
-
-  console.log("cookies", cookies);
-
+  // Create screenshot image buffer
   const imageBuffer = await page.screenshot();
-  await browser.close();
 
+  // Send image buffer in response
   res.set("Content-Type", "image/png");
   res.send(imageBuffer);
   console.log("Screenshot taken");
-  console.log("userPool", userPool);
+
+  // Close current browser page
+  await page.close();
 });
 
 app.listen(8000, () => {
