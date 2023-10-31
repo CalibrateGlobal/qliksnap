@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qliksnap-backend
+  namespace: qliksnap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qliksnap-backend
+  template: 
+    metadata:
+      labels:
+        app: qliksnap-backend
+    spec:
+      containers:
+        - name: qliksnap-backend
+          image: 793552956130.dkr.ecr.eu-west-2.amazonaws.com/k8scalibrate:qliksnap
+          ports:
+            - containerPort: 8000
+          imagePullPolicy: Always
+---
+apiVersion: v1  
+kind: Service  
+metadata:  
+  name: qliksnap-backend
+  namespace: qliksnap
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    # service.beta.kubernetes.io/aws-load-balancer-tls-cert: arn:aws:acm:{region}:{user id}:certificate/{id}
+    # service.beta.kubernetes.io/aws-load-balancer-tls-ports: "https"
+    # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  labels:  
+    app: qliksnap-backend  
+spec:  
+  type: LoadBalancer  
+  ports:  
+  - name: http 
+    port: 80 
+    targetPort: 8000 
+  - name: https
+    port: 443
+    targetPort: 8000 
+  selector:  
+    app: qliksnap-backend
