@@ -39,9 +39,24 @@ const initBrowser = async () => {
 initBrowser();
 // Note: browser is never being "closed" (i.e. await browser.close())
 
+/**
+ * @typedef {object} RequestBody
+ * @param {string} endpoint - the single integration URL, including all required url parameters such as desired selections etc.
+ * @param {string} vpHeight - the height of the snapshot viewport
+ * @param {string} vpWidth - the width of the snapshot viewport
+ * @param {Array.<string>} exclusionArray - an array listing the css selectors of any elements that should be removed from the snapshot (optional)
+ * @param {number} delay - length of delay (ms) to impose after page load to allow for visualisations to resize etc. (optional, default: 500ms)
+ * @param {number} timeout - length of timeout before error is returned when utilising Puppeteer waitFor functions (optional, default: 10000ms)
+ *
+ * @param {string} endpoint - Screenshot endpoint, handling the main functionality of the application
+ *
+ * @function
+ * @param {object} req - Request object
+ * @param {RequestBody} req.body - Request body object
+ * @param {object} res - Response object
+ */
 app.post("/screenshot", async (req, res) => {
   console.log("Taking screenshot");
-  console.log(req.body);
 
   // How to check for open page instances / tabs
   // const openPages = await browser.pages();
@@ -73,7 +88,6 @@ app.post("/screenshot", async (req, res) => {
 
   // Navigate the page to the URL supplied in the req body
   await page.goto(
-    // "https://sense1.calibrateconsulting.com/jwt/sense/app/6729311b-f919-4bd2-93a8-872f7271856c/sheet/JzJMza/state/analysis",
     req.body.url,
     // Wait for network activity to cease, as well as "load" and "domcontentloaded" events to fire before proceeding
     { waitUntil: ["networkidle0", "load", "domcontentloaded"] }
@@ -89,28 +103,45 @@ app.post("/screenshot", async (req, res) => {
   try {
     await page.waitForFunction(
       () => {
-        const uiBlocker = document.getElementById("qv-init-ui-blocker");
-        if (!uiBlocker) {
+        // Get loading indicator element
+        const loadIndicator = document.getElementsByClassName(
+          "single-load-indicator"
+        )[0];
+        // Return true (and exit waitFor function) if the display property of this element is set to 'none'
+        if (
+          window.getComputedStyle(loadIndicator).getPropertyValue("display") ===
+          "none"
+        ) {
           return true;
         }
       },
-      { timeout: 10000 }
+      // Timeout value for wait function, default of 10000 ms
+      { timeout: req.body.timeout ? req.body.timeout : 10000 }
     );
   } catch (e) {
     console.log("Error waiting for Qlik loading screen to disappear");
   }
 
   // Iterate through selectors in exclusionArray
-  for (item of req.body.exclusionArray) {
-    try {
-      // Query page and wait for element handle
-      const element = await page.waitForSelector(item);
-      // Use evaluate method to remove element
-      await element.evaluate((el) => el.remove());
-    } catch (e) {
-      console.log(`Error removing selector: ${item}`, e);
+  if (req.body.exclusionArray && req.body.exclusionArray.length > 0) {
+    for (item of req.body.exclusionArray) {
+      try {
+        // Query page and wait for element handle
+        const element = await page.waitForSelector(item, {
+          timeout: req.body.timeout ? req.body.timeout : 10000,
+        });
+        // Use evaluate method to remove element
+        await element.evaluate((el) => el.remove());
+      } catch (e) {
+        console.log(`Error removing selector: ${item}`, e);
+      }
     }
   }
+
+  // Introduce additional delay to allow for visualisations to resize after prior loading has taken place...
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  // Default delay of 500 ms
+  await delay(req.body.delay ? req.body.delay : 500);
 
   // Get current page cookies
   const cookies = await page.cookies();
