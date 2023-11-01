@@ -1,6 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 var cors = require("cors");
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const puppeteer = require("puppeteer");
 
 const app = express();
@@ -208,6 +212,39 @@ app.get('/healthz', (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+const environments = [
+  'dev',
+  'test',
+  'preprod',
+  'prod'
+];
+
+let server;
+let host;
+let options = {};
+
+const deployedEnv = process.env.NODE_ENV || 'testing';
+
+if(environments.includes(deployedEnv)) {
+  const HTTPS_SSL_KEY_PASS = process.env.HTTPS_SSL_KEY_PASS || '';
+  const HTTPS_SSL_CERT = process.env.HTTPS_SSL_CERT || path.join(__dirname, './openssl-https.cert');
+
+  const options = {
+      passphrase: HTTPS_SSL_KEY_PASS ? HTTPS_SSL_KEY_PASS : '',
+      pfx: HTTPS_SSL_CERT ? fs.readFileSync(HTTPS_SSL_CERT) : ''
+  };
+
+
+  server = https.createServer(options, app);
+  host = 'https';
+  server.listen(PORT, function() {
+    console.log(`Mashup Backend | Server started with protocol ${host} - Using port ${PORT}.`)
+  });
+
+} else {
+  server = http.createServer(options, app);
+  host = 'http';
+  server.listen(PORT, function() {
+    console.log(`Mashup Backend | Server started with protocol ${host} - Using port ${PORT}.`)
+  });
+}
