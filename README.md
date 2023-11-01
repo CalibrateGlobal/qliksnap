@@ -1,6 +1,6 @@
 # QlikSnap
 
-A Node application allowing users to create a "snapshot" of a Qlik iframe
+A Node application allowing users to create a "snapshot" of a Qlik single integration page
 
 ## Installation
 
@@ -44,13 +44,13 @@ The `.env-axample` file in the root of the repository contains examples of these
 
 - The application utilises a single endpoint:
 
-  `/snapshot`
+  `/screenshot`
 
 - Requests to this endpoint should be made via the 'POST' method and include a body specifing:
 
-  - url - the single integration URL, including all required url parameters such as desired selections etc.
-  - vpHeight - the height of the snapshot viewport
-  - vpWidth - the width of the snapshot viewport
+  - url - the single integration URL, including all required url parameters (such as selections etc.)
+  - vpHeight - the height of the headless browser viewport
+  - vpWidth - the width of the headless browser viewport
   - exclusionArray - an array listing the css selectors of any elements that should be removed from the snapshot (optional)
   - delay - length of delay (ms) to impose after page load to allow for visualisations to resize etc. (optional, default: 500ms)
   - timeout - length of timeout before error is returned when utilising Puppeteer waitFor functions (optional, default: 10000ms)
