@@ -37,6 +37,7 @@ The application's configuration is set in the .env file loated at the root of th
 - `QLIK_TOKEN`: The value of the authentication jwt to be appended to request headers
 - `QLIK_VP`: The name of the Qlik virtual proxy being used
 - `ALLOWED_ORIGIN`: The origin of requests being made to the application
+- `PORT`: Specify the port the server should listen to (default: `8000`)
 
 The `.env-axample` file in the root of the repository contains examples of these values.
 
