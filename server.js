@@ -41,7 +41,7 @@ initBrowser();
 
 /**
  * @typedef {object} RequestBody
- * @param {string} endpoint - the single integration URL, including all required url parameters such as desired selections etc.
+ * @param {string} url - the single integration URL, including all required url parameters (such as selections etc.)
  * @param {string} vpHeight - the height of the snapshot viewport
  * @param {string} vpWidth - the width of the snapshot viewport
  * @param {Array.<string>} exclusionArray - an array listing the css selectors of any elements that should be removed from the snapshot (optional)
@@ -65,15 +65,30 @@ app.post("/screenshot", async (req, res) => {
   // Creating the page instance for this request
   const page = await browser.newPage();
 
+  // Logging page console output
+  /*   page
+    .on("console", (message) =>
+      console.log(
+        `${message.type().substr(0, 3).toUpperCase()} ${message.text()}`
+      )
+    )
+    .on("pageerror", ({ message }) => console.log(message))
+    .on("response", (response) =>
+      console.log(`${response.status()} ${response.url()}`)
+    )
+    .on("requestfailed", (request) =>
+      console.log(`${request.failure().errorText} ${request.url()}`)
+    ); */
+
   // Adding authorisation header and Xrf key to request
   // This will create a session for the user associated with the "QLIK_TOKEN" jwt
   await page.setExtraHTTPHeaders({
     Authorization: `Bearer ${process.env.QLIK_TOKEN}`,
     "X-Qlik-Xrfkey": "abcdefghijklmnop",
   });
-  // Note: It is necessary to include the Authorisation header to every request in order to handle situations in which an existing session cookie
+  // Note: It is necessary to include the Authorisation header in every request in order to handle situations in which an existing session cookie
   // may no longer be valid. The Auth header ensures that a new session cookie will be appended to the page in this scenario (which will then
-  // replace the session cookie stored above for the purposes of reusing sessions)
+  // replace the session cookie stored above for the purpose of reusing sessions)
 
   // If a session cookie exists, add it to the request
   // This ensures that the same session is used (rather than creating a new session for each request and exceeding the Qlik session limit)
