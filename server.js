@@ -180,6 +180,18 @@ app.post("/screenshot", async (req, res) => {
   await page.close();
 });
 
+app.get('/readyz', (req, res) => {
+  res.json({
+    ready: true,
+  });
+});
+
+app.get('/healthz', (req, res) => {
+  res.json({
+    alive: true,
+  });
+});
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
