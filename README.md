@@ -32,7 +32,7 @@ A Node application allowing users to create a "snapshot" of a Qlik single integr
 
 ### Configuration
 
-The application's configuration is set in the .env file loated at the root of the repository. This file should contain values for:
+The application's configuration is set in the .env file located at the root of the repository. This file should contain values for:
 
 - `QLIK_TOKEN`: The value of the authentication jwt to be appended to request headers
 - `QLIK_VP`: The name of the Qlik virtual proxy being used
@@ -41,6 +41,26 @@ The application's configuration is set in the .env file loated at the root of th
 
 The `.env-axample` file in the root of the repository contains examples of these values.
 
+### Qlik Virtual Proxy Configuration
+
+- Create a Qlik Virtual Proxy with the appropriate Name, Prefix, Session cookie header name etc:
+  - https://help.qlik.com/en-US/sense-admin/August2023/Subsystems/DeployAdministerQSE/Content/Sense_DeployAdminister/QSEoW/Administer_QSEoW/Managing_QSEoW/create-virtual-proxy.htm
+  - The default prefix and session cookie header name are `jwt` and `X-Qlik-Session-jwt` respectively
+  - Ensure that the newly created Virtual Proxy is linked to an existing Proxy
+- Generate a valid TLS certificate for the target environment (Note: Using an existing Qlik server certificate is the most straightforward and reliable way to handle this)
+- Follow step 1 in the guide below to set up JWT authentication for the Virtual Proxy:
+  - https://community.qlik.com/t5/Official-Support-Articles/Qlik-Sense-How-to-set-up-JWT-authentication/ta-p/1716226#toc-hId-1254428716
+  - For simpler installations / testing purposes, existing Qlik configured certificates can be used as described in the guide
+- Generate a JWT using the above certificate for the intended user:
+  - Use an appropriate js tool / dependency to generate the JWT or use `jwt.io` as described in step 2 of the above guide
+  - The PAYLOAD should reflect the JWT attributes specified in the Virtual Proxy Setup (i.e. `userId` and `userDirectory`)
+  - This JWT should now be appended to the Authorisation header of all Qlik page requests (i.e. `"Authorisation: Bearer <jwt>"`)
+- Testing the JWT:
+  - Use an extension such as `Modheader` to append the correct Authorisation header to a request made to view the desired Qlik Sense dashboard (with the VP prefix inserted into the URL)
+  - Use `curl` to make a GET request with the required Authorisation header to a Qlik API (with the VP prefix inserted into the URL)
+  - Use `Postman` etc. to make a GET request with the required Authorisation header to a Qlik API (with the VP prefix inserted into the URL)
+  - Make a request to the Qliksnap backend and verify that the correct response is received
+  
 ## Usage
 
 - The application utilises a single endpoint:
