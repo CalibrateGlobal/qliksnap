@@ -1,0 +1,200 @@
+{"level":"info","message":"requestTicket: Ticket Options ("}
+{"address":"35.176.14.250","code":"ETIMEDOUT","errno":-4039,"level":"error","message":"requestTicket: Error submitting authentication request ( connect ETIMEDOUT 35.176.14.250:4243","port":4243,"stack":"Error: connect ETIMEDOUT 35.176.14.250:4243\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1592:16)","syscall":"connect"}
+{"level":"error","message":"ErrorError: connect ETIMEDOUT 35.176.14.250:4243"}
+{"level":"info","message":"requestTicket: Ticket Options ("}
+{"address":"35.176.14.250","code":"ETIMEDOUT","errno":-4039,"level":"error","message":"requestTicket: Error submitting authentication request ( connect ETIMEDOUT 35.176.14.250:4243","port":4243,"stack":"Error: connect ETIMEDOUT 35.176.14.250:4243\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1592:16)","syscall":"connect"}
+{"level":"error","message":"ErrorError: connect ETIMEDOUT 35.176.14.250:4243"}
+{"level":"info","message":"requestTicket: Ticket Options ("}
+{"level":"info","message":"requestTicket: statusCode: ("}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: Ticket Options ("}
+{"level":"info","message":"requestTicket: statusCode: ("}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: Ticket Options ( undefined/ticket?xrfkey=yKkptfHO4eqOatAI)"}
+{"level":"info","message":"requestTicket: statusCode: (400)"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: POST Response \n"}
+{"level":"info","message":"requestTicket: Ticket Options ( /qps/jwt/ticket?xrfkey=wJa6RJ4aPD51sq9w)"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"info","message":"requestTicket: Ticket Options ( [object Object])"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"info","message":"requestTicket: Ticket Options ( [object Object])"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"info","message":"requestTicket: Ticket Options ( [object Object])"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"info","message":"requestTicket: Ticket Options ( [object Object])"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"info","message":"[object Object]"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"nimaChrvnkfervnd"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps/jwt/ticket?xrfkey=nimaChrvnkfervnd","port":"","rejectUnauthorized":false}}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:443/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"Nae0GxxuLwOfZJ7q"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps/jwt/ticket?xrfkey=Nae0GxxuLwOfZJ7q","port":"","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:443/jwt/qps/"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"5v8ZvbcUS6p0BOW1"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/jwt/qps//ticket?xrfkey=5v8ZvbcUS6p0BOW1","port":"","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/jwt/qps/"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"2XQkvZw6AUJhyny3"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/jwt/qps//ticket?xrfkey=2XQkvZw6AUJhyny3","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: connect ETIMEDOUT 35.176.14.250:4243\n      )"}
+{"level":"error","message":"ErrorError: connect ETIMEDOUT 35.176.14.250:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"ZnVsE0Omw4HMXyar"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps//ticket?xrfkey=ZnVsE0Omw4HMXyar","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: connect ETIMEDOUT 35.176.14.250:4243\n      )"}
+{"level":"error","message":"ErrorError: connect ETIMEDOUT 35.176.14.250:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"gX8T04tiA8PZWIyW"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps/jwt/ticket?xrfkey=gX8T04tiA8PZWIyW","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: connect ETIMEDOUT 35.176.14.250:4243\n      )"}
+{"level":"error","message":"ErrorError: connect ETIMEDOUT 35.176.14.250:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"W3EJakXgR8DNwZsQ"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps/jwt/ticket?xrfkey=W3EJakXgR8DNwZsQ","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: connect ETIMEDOUT 35.176.14.250:4243\n      )"}
+{"level":"error","message":"ErrorError: connect ETIMEDOUT 35.176.14.250:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"xwu0FlQ1PfsP0e9i"},"host":"sense1.calibrateconsulting.com:4243","method":"POST","path":"/qps/jwt/ticket?xrfkey=xwu0FlQ1PfsP0e9i","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243\n      )"}
+{"level":"error","message":"ErrorError: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"MKeW0Tsy0HDydAO3"},"host":"sense1.calibrateconsulting.com:4243","method":"POST","path":"/qps/jwt/ticket?xrfkey=MKeW0Tsy0HDydAO3","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243\n      )"}
+{"level":"error","message":"ErrorError: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"NTT099WFsHcK7miK"},"host":"sense1.calibrateconsulting.com:4243","method":"POST","path":"/qps/jwt/ticket?xrfkey=NTT099WFsHcK7miK","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243\n      )"}
+{"level":"error","message":"ErrorError: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"sense1.calibrateconsulting.com:4243"}
+{"level":"info","message":"4243"}
+{"level":"info","message":"/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"ZfoJ6bDrmTSwopBx"},"host":"sense1.calibrateconsulting.com:4243","method":"POST","path":"/qps/jwt/ticket?xrfkey=ZfoJ6bDrmTSwopBx","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243\n      )"}
+{"level":"error","message":"ErrorError: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:443/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com/qps/jwt"}
+{"level":"info","message":"sense1.calibrateconsulting.com"}
+{"level":"info","message":""}
+{"level":"info","message":"/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"Fvkak8ZTNWJy4wwR"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps/jwt/ticket?xrfkey=Fvkak8ZTNWJy4wwR","port":"","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:443/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com/qps/jwt"}
+{"level":"info","message":"sense1.calibrateconsulting.com"}
+{"level":"info","message":""}
+{"level":"info","message":"/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"2nMRSEXnNe0ZyP8a"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps/jwt/ticket?xrfkey=2nMRSEXnNe0ZyP8a","port":"","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"info","message":"requestTicket: statusCode: (404)"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"sense1.calibrateconsulting.com:4243"}
+{"level":"info","message":"4243"}
+{"level":"info","message":"/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"CxTucDh5n9wWCUoQ"},"host":"sense1.calibrateconsulting.com:4243","method":"POST","path":"/qps/jwt/ticket?xrfkey=CxTucDh5n9wWCUoQ","port":"4243","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243\n      )"}
+{"level":"error","message":"ErrorError: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4243"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4242/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com:4242/qps/jwt"}
+{"level":"info","message":"sense1.calibrateconsulting.com:4242"}
+{"level":"info","message":"4242"}
+{"level":"info","message":"/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"PSDMwZrvbAV4D7re"},"host":"sense1.calibrateconsulting.com:4242","method":"POST","path":"/qps/jwt/ticket?xrfkey=PSDMwZrvbAV4D7re","port":"4242","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"error","message":" requestTicket: Error submitting authentication request (\n    Error: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4242\n      )"}
+{"level":"error","message":"ErrorError: getaddrinfo ENOTFOUND sense1.calibrateconsulting.com:4242"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4242/qps/jwt"}
+{"level":"info","message":"https://sense1.calibrateconsulting.com:4242/qps/jwt"}
+{"level":"info","message":"sense1.calibrateconsulting.com:4242"}
+{"level":"info","message":"4242"}
+{"level":"info","message":"/qps/jwt"}
+{"level":"info","message":{"agent":false,"headers":{"Authorization":"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJyZWxsaXNicm93bkBjYWxpYnJhdGVjb25zdWx0aW5nLmNvbSIsInVzZXJEaXJlY3RvcnkiOiJDQUxJQlJBVEUiLCJleHAiOjE3Mjk4NjM4NjN9.bG8bd8fg8iiswy4C3ajEEEByDGwEWT01CGQz2lxu1LNB8T_CC9SUAqHyj6SJrpWq3B8477ydznKIexvS22JkMM7AKDeOCdNLup3DjDHikyTNVYE6ToqQfiNrZknYjeXoBCYs7zLnbWwdbNe0vVASsCqlAshvCCqgj8BdSsigFZEuYZk4u9_HHnE6syL26jlpWnrGCLBaT6NDlYfgYckpkCT_IinHV5Hu1eqyqqWJdq_nQXlHGNwr8pSFPo2s7Aw5mUocANQMUaxJtC_lBZu2adU3_iwiAyZxIy65LkYfUpHdvTOYPuRmhpdus5syUG1shb_owbbCsHL_BCtMjzvprg","Content-Type":"application/json","X-qlik-xrfkey":"ZFvUQHu8lB4JdoC7"},"host":"sense1.calibrateconsulting.com","method":"POST","path":"/qps/jwt/ticket?xrfkey=ZFvUQHu8lB4JdoC7","port":"4242","rejectUnauthorized":false}}
+{"level":"debug","message":"requestTicket: JSON request: "}
+{"level":"debug"}
+{"level":"info","message":"requestTicket: statusCode: (403)"}

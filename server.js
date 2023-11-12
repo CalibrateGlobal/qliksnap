@@ -6,6 +6,8 @@ const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
+const winston = require("winston");
+let functions = require("./functions");
 
 const app = express();
 
@@ -17,6 +19,15 @@ app.use(
     credentials: true,
   })
 );
+
+// Set up logging
+const logger = winston.createLogger({
+  level: "debug",
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "combined.log" }),
+  ],
+});
 
 // Use a single session for all requests and reuse session cookie until it expires
 let sessionCookie = {};
@@ -60,8 +71,8 @@ initBrowser();
  * @param {object} res - Response object
  */
 app.post("/screenshot", async (req, res) => {
-  if(!browser.connected) {
-    res.status(400).send('Browser starting, please refresh in a few seconds');
+  if (!browser.connected) {
+    res.status(400).send("Browser starting, please refresh in a few seconds");
   }
   console.log("Taking screenshot");
 
@@ -214,6 +225,76 @@ app.get("/healthz", (req, res) => {
   res.json({
     alive: true,
   });
+});
+
+app.get("/login", function (req, res, next) {
+  logger.debug("Route: GET /login");
+
+  /* var userId = req.query.user;
+  var userDirectory = req.query.directory; */
+  /*  var app = req.query.app; */
+
+  let userId = "rellisbrown@calibrateconsulting.com";
+  let userDirectory = "CALIBRATE";
+
+  let appPath =
+    "sense/app/2b20eabb-097e-449f-99ed-f9d303fd3746/sheet/ff6fbc99-fab9-48a8-8274-e7f52cfb39a4/state/analysis";
+
+  /*  var appInfo = getAppInfo(app, res); */
+
+  /* if (appInfo.boolAuth) { */
+  var authURL =
+    "https://" +
+    process.env.QLIK_HOSTNAME +
+    ":" +
+    process.env.QLIK_QPS_PORT +
+    "/qps/" +
+    process.env.QLIK_VP;
+
+  logger.debug(
+    "Route: GET /login - USER: (",
+    userId,
+    ") DIRECTORY: (",
+    userDirectory,
+    ")"
+  );
+
+  logger.debug("Route: GET /login - Requesting ticket...");
+  logger.debug(authURL);
+  // functions.getTicket(
+  //   req,
+  //   res,
+  //   next,
+  //   user,
+  //   directory,
+  //   authUri,
+  //   app,
+  //   /* appInfo.path */
+  //   appPath
+  // );
+  let redirectURL;
+  try {
+    redirectURL = functions.getTicket({
+      userId,
+      userDirectory,
+      authURL,
+      appPath,
+      logger,
+    });
+  } catch (e) {
+    logger.info(e);
+  }
+
+  logger.debug(redirectURL);
+  /* req.session.destroy(); */
+  /*  } else {
+    var url =
+      "https://" +
+      process.env.QLIK_HOSTNAME +
+      (process.env.QLIK_APP_PORT == "" ? "" : ":" + process.env.QLIK_APP_PORT) +
+      appInfo.path;
+    res.redirect(url);
+  } */
 });
 
 const PORT = process.env.PORT || 8000;
