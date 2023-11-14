@@ -723,3 +723,74 @@
 {"Attributes":[],"TargetUri":null,"Ticket":"DQnxNLAsHvVYGO5K","UserDirectory":"CALIBRATE","UserId":"rellisbrown@calibrateconsulting.com","level":"info","message":"requestTicket: Qlik Sense Ticket \n"}
 {"level":"debug","message":"requestTicket: (https://sense1.calibrateconsulting.com/jwt)"}
 {"level":"debug","message":"requestTicket: Redirecting to (https://sense1.calibrateconsulting.com/jwtsense/app/2b20eabb-097e-449f-99ed-f9d303fd3746/sheet/ff6fbc99-fab9-48a8-8274-e7f52cfb39a4/state/analysis?Qlikticket=DQnxNLAsHvVYGO5K)"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"debug","message":{}}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"debug","message":{}}
+{"level":"info","message":"Ticket retrieved: vGuSrl8XB3nXzMPo"}
+{"level":"debug","message":"Route: GET /login"}
+{"level":"debug","message":"Route: GET /login - USER: ("}
+{"level":"debug","message":"Route: GET /login - Requesting ticket..."}
+{"level":"debug","message":"https://sense1.calibrateconsulting.com:4243/qps/jwt"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: N-RcVO7d14v3g4ZJ"}
+{"level":"debug","message":"N-RcVO7d14v3g4ZJ"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: uAX4qBQUa5smivtX"}
+{"level":"debug","message":"uAX4qBQUa5smivtX"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: dm7BCCcjWJw51w2q"}
+{"level":"debug","message":"dm7BCCcjWJw51w2q"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: Ej9DtSjuMgxoxyo5"}
+{"level":"debug","message":"Ej9DtSjuMgxoxyo5"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: uUn6aGGmSmoGRmLz"}
+{"level":"debug","message":"uUn6aGGmSmoGRmLz"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: GcDRQ7J1SyK2rN1v"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: UVgh4p_Wp2F2N9vX"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: i-cOYNcLr5t2ar1q"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: 86si0GGoP-KSZqhc"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: pJbhRqEUxgO7aCu_"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: TIUDoMHX7GFvi41C"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: rn45qITStTsrXg4c"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: gu07uv0KiAmoxsCv"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: 0MupFtOvXQqO62XB"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: e1ZGCCC8.wqGe3nd"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: 7k_7RGk4ciE.MFCE"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: C8u2sa7.1Mk2nmO9"}
+{"level":"info","message":"Taking screenshot"}
+{"level":"info","message":"Retrieving ticket for: CALIBRATE/rellisbrown@calibrateconsulting.com"}
+{"level":"info","message":"Ticket retrieved: 2IzHf9-CPkf9-k8."}
+{"level":"info","message":"Taking screenshot"}

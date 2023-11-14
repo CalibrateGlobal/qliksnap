@@ -1,20 +1,13 @@
-/* require("dotenv").config(); */
-/* import dotenv from "dotenv";
-dotenv.config(); */
-import 'dotenv/config'
+import "dotenv/config";
 import express, { json } from "express";
 import cors from "cors";
 import { createServer } from "http";
-import { createServer as _createServer } from "https";
+import { createServer as createServerHTTPS } from "https";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { launch } from "puppeteer";
 import { createLogger, transports as _transports } from "winston";
-import getTicket from "./functions.js";
-
-/* dotenv.config(); */
-
-console.log(process.env.ALLOWED_ORIGIN);
+import getTicket from "./lib/qlikFunctions.js";
 
 const app = express();
 
@@ -39,6 +32,8 @@ const logger = createLogger({
 // Use a single session for all requests and reuse session cookie until it expires
 let sessionCookie = {};
 
+let sessionCache = [];
+
 let browser;
 
 // Create browser instance and reuse it for each request
@@ -52,7 +47,7 @@ const initBrowser = async () => {
     });
   } else {
     browser = await launch({
-      headless: true,
+      headless: false,
       args: ["--no-sandbox", "--disable-gpu"],
     });
   }
@@ -81,7 +76,30 @@ app.post("/screenshot", async (req, res) => {
   if (!browser.connected) {
     res.status(400).send("Browser starting, please refresh in a few seconds");
   }
-  console.log("Taking screenshot");
+
+  console.log(req.body);
+
+  let ticket;
+  if (req.body.userId && req.body.userDirectory) {
+    try {
+      ticket = await getTicket({
+        userId: req.body.userId,
+        userDirectory: req.body.userDirectory,
+        logger,
+      });
+    } catch (e) {
+      logger.error(e);
+      res.status(500).send("Error retrieving ticket");
+    }
+  } else {
+    logger.error("Error: userId and / or userDirectory not supplied");
+    res.status(400).send("Error: userId and / or userDirectory not supplied");
+  }
+
+  let adjustedUrl = new URL(req.body.url);
+  adjustedUrl.searchParams.append("QlikTicket", ticket);
+
+  logger.info("Taking screenshot");
 
   // How to check for open page instances / tabs
   // const openPages = await browser.pages();
@@ -108,7 +126,7 @@ app.post("/screenshot", async (req, res) => {
   // Adding authorisation header and Xrf key to request
   // This will create a session for the user associated with the "QLIK_TOKEN" jwt
   await page.setExtraHTTPHeaders({
-    Authorization: `Bearer ${process.env.QLIK_TOKEN}`,
+    /* Authorization: `Bearer ${process.env.QLIK_TOKEN}`, */
     "X-Qlik-Xrfkey": "abcdefghijklmnop",
   });
   // Note: It is necessary to include the Authorisation header in every request in order to handle situations in which an existing session cookie
@@ -117,9 +135,18 @@ app.post("/screenshot", async (req, res) => {
 
   // If a session cookie exists, add it to the request
   // This ensures that the same session is used (rather than creating a new session for each request and exceeding the Qlik session limit)
-  if (sessionCookie && sessionCookie.value) {
-    await page.setCookie(sessionCookie);
+
+  let tempSession = sessionCache.find(
+    (session) => session.userId === req.body.userId
+  );
+
+  if (tempSession && tempSession.sessionCookie) {
+    await page.setCookie(tempSession.sessionCookie);
   }
+
+  /*   if (sessionCookie && sessionCookie.value) {
+    await page.setCookie(sessionCookie);
+  } */
 
   // How to check request headers
   // page.on("request", (request) => {
@@ -128,7 +155,7 @@ app.post("/screenshot", async (req, res) => {
 
   // Navigate the page to the URL supplied in the req body
   await page.goto(
-    req.body.url,
+    adjustedUrl,
     // Wait for network activity to cease, as well as "load" and "domcontentloaded" events to fire before proceeding
     { waitUntil: ["networkidle0", "load", "domcontentloaded"] }
   );
@@ -185,20 +212,21 @@ app.post("/screenshot", async (req, res) => {
 
   // Get current page cookies
   const cookies = await page.cookies();
+  console.log(cookies);
 
   // Generic Qlik session cookie name
   let cookieName = "X-Qlik-Session";
 
   // Append virtual proxy suffix to cookie name if present
-  if (process.env.QLIK_VP && process.env.QLIK_VP.length > 0) {
+  /*   if (process.env.QLIK_VP && process.env.QLIK_VP.length > 0) {
     cookieName = `X-Qlik-Session-${process.env.QLIK_VP}`;
-  }
+  } */
 
   // Get the current Qlik session cookie (if present)
   let tempSessionCookie = cookies.find((cookie) => cookie.name === cookieName);
 
   // Replace session cookie if value does not match current page session cookie
-  if (
+  /*   if (
     (sessionCookie &&
       sessionCookie.value &&
       tempSessionCookie.value !== sessionCookie.value) ||
@@ -208,7 +236,29 @@ app.post("/screenshot", async (req, res) => {
     if (tempSessionCookie) {
       sessionCookie = tempSessionCookie;
     }
+  } */
+
+  if (
+    tempSession &&
+    tempSessionCookie &&
+    tempSessionCookie.value !== tempSession.sessionCookie.value
+  ) {
+    tempSession.sessionCookie = tempSessionCookie;
   }
+
+  if (tempSession) {
+    const sessionIndex = sessionCache.findIndex(
+      (session) => session.userId === tempSession.userId
+    );
+    sessionCache[sessionIndex] = tempSession;
+  } else if (req.body.userId && tempSessionCookie) {
+    sessionCache.push({
+      userId: req.body.userId,
+      sessionCookie: tempSessionCookie,
+    });
+  }
+
+  console.log(sessionCache);
 
   // Create screenshot image buffer
   const imageBuffer = await page.screenshot();
@@ -234,74 +284,22 @@ app.get("/healthz", (req, res) => {
   });
 });
 
-app.get("/login", function (req, res, next) {
-  logger.debug("Route: GET /login");
-
-  /* var userId = req.query.user;
-  var userDirectory = req.query.directory; */
-  /*  var app = req.query.app; */
-
+app.get("/login", async function (req, res, next) {
   let userId = "rellisbrown@calibrateconsulting.com";
   let userDirectory = "CALIBRATE";
 
-  let appPath =
-    "sense/app/2b20eabb-097e-449f-99ed-f9d303fd3746/sheet/ff6fbc99-fab9-48a8-8274-e7f52cfb39a4/state/analysis";
-
-  /*  var appInfo = getAppInfo(app, res); */
-
-  /* if (appInfo.boolAuth) { */
-  var authURL =
-    "https://" +
-    process.env.QLIK_HOSTNAME +
-    ":" +
-    process.env.QLIK_QPS_PORT +
-    "/qps/" +
-    process.env.QLIK_VP;
-
-  logger.debug(
-    "Route: GET /login - USER: (",
-    userId,
-    ") DIRECTORY: (",
-    userDirectory,
-    ")"
-  );
-
-  logger.debug("Route: GET /login - Requesting ticket...");
-  logger.debug(authURL);
-  // functions.getTicket(
-  //   req,
-  //   res,
-  //   next,
-  //   user,
-  //   directory,
-  //   authUri,
-  //   app,
-  //   /* appInfo.path */
-  //   appPath
-  // );
-  let redirectURL;
+  let ticket;
   try {
-    redirectURL = getTicket({
+    ticket = await getTicket({
       userId,
       userDirectory,
-      authURL,
-      appPath,
       logger,
     });
   } catch (e) {
     logger.info(e);
   }
 
-  logger.debug(redirectURL);
-  /* req.session.destroy(); */
-  /*  } else {
-    var url =
-      "https://" +
-      process.env.QLIK_HOSTNAME +
-      (process.env.QLIK_APP_PORT == "" ? "" : ":" + process.env.QLIK_APP_PORT) +
-      appInfo.path;
-    res.redirect(url);
-  } */
+  logger.debug(ticket);
 });
 
 const PORT = process.env.PORT || 8000;
@@ -323,7 +321,7 @@ if (environments.includes(deployedEnv)) {
     pfx: HTTPS_SSL_CERT ? readFileSync(HTTPS_SSL_CERT) : "",
   };
 
-  server = _createServer(options, app);
+  server = createServerHTTPS(options, app);
   host = "https";
   server.listen(PORT, function () {
     console.log(
