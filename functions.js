@@ -1,6 +1,53 @@
-const https = require("https");
+import { Agent, request } from "https";
+import { resolve } from "path";
+import { readFileSync } from "fs";
+import { QlikProxyApi } from "qlik-proxy-api";
 
-const getTicket = ({ userId, userDirectory, authURL, appPath, logger }) => {
+console.log(process.env.QLIK_CLIENT_CERT_PATH);
+
+const clientCertPath = resolve(process.env.QLIK_CLIENT_CERT_PATH, "client.pem");
+const clientKeyPath = resolve(
+  process.env.QLIK_CLIENT_CERT_PATH,
+  "client_key.pem"
+);
+
+// setup the httpsAgent
+//   - read the certificates
+//   - ignore certificate errors
+const httpsAgentCert = new Agent({
+  rejectUnauthorized: false,
+  cert: readFileSync(clientCertPath),
+  key: readFileSync(clientKeyPath),
+});
+
+// create new instance or qlik-proxy-api
+const proxyApi = new QlikProxyApi.client({
+  host: process.env.QLIK_HOSTNAME,
+  port: process.env.QLIK_QPS_PORT, // optional. default is 4243
+  httpsAgent: httpsAgentCert,
+  authentication: {
+    user_dir: process.env.QLIK_AUTH_USER_DIRECTORY,
+    user_name: process.env.QLIK_AUTH_USER_ID,
+  },
+});
+
+const getTicket = async ({
+  userId,
+  userDirectory,
+  authURL,
+  appPath,
+  logger,
+}) => {
+  /*  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0; */
+
+  console.log(userId, userDirectory);
+
+  const ticket = await proxyApi.tickets.add({ userId, userDirectory });
+
+   console.log(ticket);
+
+  console.log(process.env.NODE_TLS_REJECT_UNAUTHORIZED);
+
   let XRFKEY = rand(16);
   //Configure parameters for the ticket request
 
@@ -12,6 +59,19 @@ const getTicket = ({ userId, userDirectory, authURL, appPath, logger }) => {
   logger.info(url.port);
   logger.info(url.pathname);
 
+  /*   const clientCertPath = path.resolve(
+    process.env.QLIK_CLIENT_CERT_PATH,
+    "client.pem"
+  );
+  const clientKeyPath = path.resolve(
+    process.env.QLIK_CLIENT_CERT_PATH,
+    "client_key.pem"
+  ); */
+
+  console.log("client", readFileSync(clientCertPath));
+
+  // sa_scheduler
+
   options = {
     host: url.hostname,
     port: url.port,
@@ -20,17 +80,22 @@ const getTicket = ({ userId, userDirectory, authURL, appPath, logger }) => {
     headers: {
       "X-qlik-xrfkey": XRFKEY,
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.QLIK_TOKEN}`,
+      "X-Qlik-User": `UserDirectory=${userDirectory}; UserId=${userId}`,
+      /* Authorization: `Bearer ${process.env.QLIK_TOKEN}`, */
     },
     /* cert: fs.readFileSync(cfg.certificates.client),
       key: fs.readFileSync(cfg.certificates.client_key), */
+    cert: readFileSync(clientCertPath),
+    key: readFileSync(clientKeyPath),
     rejectUnauthorized: false,
+
     agent: false,
   };
 
-  logger.info(options);
+  /* logger.info(options); */
   //Send ticket request
-  let ticketreq = https.request(options, function (ticketres) {
+  let ticketreq = request(options, function (ticketres) {
+    /* console.log(ticketres); */
     logger.info(`requestTicket: statusCode: (${ticketres.statusCode})`);
 
     ticketres.on("data", function (d) {
@@ -89,6 +154,8 @@ function rand(length, current) {
     : current;
 }
 
-module.exports = {
+/* module.exports = {
   getTicket,
-};
+}; */
+
+export default getTicket;

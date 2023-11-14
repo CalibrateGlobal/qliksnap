@@ -1,17 +1,24 @@
-require("dotenv").config();
-const express = require("express");
-var cors = require("cors");
-const http = require("http");
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
-const puppeteer = require("puppeteer");
-const winston = require("winston");
-let functions = require("./functions");
+/* require("dotenv").config(); */
+/* import dotenv from "dotenv";
+dotenv.config(); */
+import 'dotenv/config'
+import express, { json } from "express";
+import cors from "cors";
+import { createServer } from "http";
+import { createServer as _createServer } from "https";
+import { readFileSync } from "fs";
+import { join } from "path";
+import { launch } from "puppeteer";
+import { createLogger, transports as _transports } from "winston";
+import getTicket from "./functions.js";
+
+/* dotenv.config(); */
+
+console.log(process.env.ALLOWED_ORIGIN);
 
 const app = express();
 
-app.use(express.json());
+app.use(json());
 
 app.use(
   cors({
@@ -21,11 +28,11 @@ app.use(
 );
 
 // Set up logging
-const logger = winston.createLogger({
+const logger = createLogger({
   level: "debug",
   transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: "combined.log" }),
+    new _transports.Console(),
+    new _transports.File({ filename: "combined.log" }),
   ],
 });
 
@@ -38,13 +45,13 @@ let browser;
 const initBrowser = async () => {
   // Need to specify chrome executable path when running in docker container
   if (process.env.DOCKER) {
-    browser = await puppeteer.launch({
+    browser = await launch({
       headless: true,
       executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox", "--disable-gpu"],
     });
   } else {
-    browser = await puppeteer.launch({
+    browser = await launch({
       headless: true,
       args: ["--no-sandbox", "--disable-gpu"],
     });
@@ -274,7 +281,7 @@ app.get("/login", function (req, res, next) {
   // );
   let redirectURL;
   try {
-    redirectURL = functions.getTicket({
+    redirectURL = getTicket({
       userId,
       userDirectory,
       authURL,
@@ -309,14 +316,14 @@ const deployedEnv = process.env.NODE_ENV || "testing";
 if (environments.includes(deployedEnv)) {
   const HTTPS_SSL_KEY_PASS = process.env.HTTPS_SSL_KEY_PASS || "";
   const HTTPS_SSL_CERT =
-    process.env.HTTPS_SSL_CERT || path.join(__dirname, "./openssl-https.cert");
+    process.env.HTTPS_SSL_CERT || join(__dirname, "./openssl-https.cert");
 
   const options = {
     passphrase: HTTPS_SSL_KEY_PASS ? HTTPS_SSL_KEY_PASS : "",
-    pfx: HTTPS_SSL_CERT ? fs.readFileSync(HTTPS_SSL_CERT) : "",
+    pfx: HTTPS_SSL_CERT ? readFileSync(HTTPS_SSL_CERT) : "",
   };
 
-  server = https.createServer(options, app);
+  server = _createServer(options, app);
   host = "https";
   server.listen(PORT, function () {
     console.log(
@@ -324,7 +331,7 @@ if (environments.includes(deployedEnv)) {
     );
   });
 } else {
-  server = http.createServer(options, app);
+  server = createServer(options, app);
   host = "http";
   server.listen(PORT, function () {
     console.log(
