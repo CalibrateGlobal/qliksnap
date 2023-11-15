@@ -29,9 +29,7 @@ const logger = createLogger({
   ],
 });
 
-// Use a single session for all requests and reuse session cookie until it expires
-let sessionCookie = {};
-
+// Create a session cache in order to reuse cookies from existing user sessions. 
 let sessionCache = [];
 
 let browser;
@@ -41,13 +39,13 @@ const initBrowser = async () => {
   // Need to specify chrome executable path when running in docker container
   if (process.env.DOCKER) {
     browser = await launch({
-      headless: true,
+     /*  headless: false, */
       executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox", "--disable-gpu"],
     });
   } else {
     browser = await launch({
-      headless: false,
+     /*  headless: false, */
       args: ["--no-sandbox", "--disable-gpu"],
     });
   }
@@ -58,6 +56,8 @@ initBrowser();
 
 /**
  * @typedef {object} RequestBody
+ * @param {string} userId - the userId of the user for whom the session will be created
+ * @param {string} userDirectory - the userDirectory of the user for whom the session will be created
  * @param {string} url - the single integration URL, including all required url parameters (such as selections etc.)
  * @param {string} vpHeight - the height of the snapshot viewport
  * @param {string} vpWidth - the width of the snapshot viewport
@@ -77,8 +77,7 @@ app.post("/screenshot", async (req, res) => {
     res.status(400).send("Browser starting, please refresh in a few seconds");
   }
 
-  console.log(req.body);
-
+  // Get ticket using QPS API 
   let ticket;
   if (req.body.userId && req.body.userDirectory) {
     try {
@@ -96,6 +95,10 @@ app.post("/screenshot", async (req, res) => {
     res.status(400).send("Error: userId and / or userDirectory not supplied");
   }
 
+
+  // Append ticket to page URL for intitial authentication
+  // If successful, this will result in a session cookie being returned with the page request
+  // Note: Although the ticket is appended to every request, it will be ignored if there is already a valid session cookie present
   let adjustedUrl = new URL(req.body.url);
   adjustedUrl.searchParams.append("QlikTicket", ticket);
 
@@ -123,15 +126,10 @@ app.post("/screenshot", async (req, res) => {
       console.log(`${request.failure().errorText} ${request.url()}`)
     ); */
 
-  // Adding authorisation header and Xrf key to request
-  // This will create a session for the user associated with the "QLIK_TOKEN" jwt
-  await page.setExtraHTTPHeaders({
-    /* Authorization: `Bearer ${process.env.QLIK_TOKEN}`, */
+  // Adding Xrf key to request
+ /*  await page.setExtraHTTPHeaders({
     "X-Qlik-Xrfkey": "abcdefghijklmnop",
-  });
-  // Note: It is necessary to include the Authorisation header in every request in order to handle situations in which an existing session cookie
-  // may no longer be valid. The Auth header ensures that a new session cookie will be appended to the page in this scenario (which will then
-  // replace the session cookie stored above for the purpose of reusing sessions)
+  }); */
 
   // If a session cookie exists, add it to the request
   // This ensures that the same session is used (rather than creating a new session for each request and exceeding the Qlik session limit)
@@ -143,10 +141,6 @@ app.post("/screenshot", async (req, res) => {
   if (tempSession && tempSession.sessionCookie) {
     await page.setCookie(tempSession.sessionCookie);
   }
-
-  /*   if (sessionCookie && sessionCookie.value) {
-    await page.setCookie(sessionCookie);
-  } */
 
   // How to check request headers
   // page.on("request", (request) => {
@@ -186,7 +180,7 @@ app.post("/screenshot", async (req, res) => {
       { timeout: req.body.timeout ? req.body.timeout : 10000 }
     );
   } catch (e) {
-    console.log("Error waiting for Qlik loading screen to disappear");
+    logger.error("Error waiting for Qlik loading screen to disappear");
   }
 
   // Iterate through selectors in exclusionArray
@@ -200,7 +194,7 @@ app.post("/screenshot", async (req, res) => {
         // Use evaluate method to remove element
         await element.evaluate((el) => el.remove());
       } catch (e) {
-        console.log(`Error removing selector: ${item}`, e);
+        logger.error(`Error removing selector: ${item}`, e);
       }
     }
   }
@@ -212,7 +206,6 @@ app.post("/screenshot", async (req, res) => {
 
   // Get current page cookies
   const cookies = await page.cookies();
-  console.log(cookies);
 
   // Generic Qlik session cookie name
   let cookieName = "X-Qlik-Session";
@@ -226,18 +219,6 @@ app.post("/screenshot", async (req, res) => {
   let tempSessionCookie = cookies.find((cookie) => cookie.name === cookieName);
 
   // Replace session cookie if value does not match current page session cookie
-  /*   if (
-    (sessionCookie &&
-      sessionCookie.value &&
-      tempSessionCookie.value !== sessionCookie.value) ||
-    !sessionCookie.value ||
-    !sessionCookie
-  ) {
-    if (tempSessionCookie) {
-      sessionCookie = tempSessionCookie;
-    }
-  } */
-
   if (
     tempSession &&
     tempSessionCookie &&
@@ -246,6 +227,8 @@ app.post("/screenshot", async (req, res) => {
     tempSession.sessionCookie = tempSessionCookie;
   }
 
+
+  // Add / replace session for user in cache
   if (tempSession) {
     const sessionIndex = sessionCache.findIndex(
       (session) => session.userId === tempSession.userId
@@ -258,15 +241,13 @@ app.post("/screenshot", async (req, res) => {
     });
   }
 
-  console.log(sessionCache);
-
   // Create screenshot image buffer
   const imageBuffer = await page.screenshot();
 
   // Send image buffer in response
   res.set("Content-Type", "image/png");
   res.send(imageBuffer);
-  console.log("Screenshot taken");
+  logger.info("Screenshot taken");
 
   // Close current browser page
   await page.close();
@@ -324,7 +305,7 @@ if (environments.includes(deployedEnv)) {
   server = createServerHTTPS(options, app);
   host = "https";
   server.listen(PORT, function () {
-    console.log(
+    logger.info(
       `Mashup Backend | Server started with protocol ${host} - Using port ${PORT}.`
     );
   });
@@ -332,7 +313,7 @@ if (environments.includes(deployedEnv)) {
   server = createServer(options, app);
   host = "http";
   server.listen(PORT, function () {
-    console.log(
+    logger.info(
       `Mashup Backend | Server started with protocol ${host} - Using port ${PORT}.`
     );
   });
