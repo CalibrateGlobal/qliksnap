@@ -22,14 +22,14 @@ app.use(
 
 // Set up logging
 const logger = createLogger({
-  level: "debug",
+ /*  level: "debug", */
   transports: [
     new _transports.Console(),
     new _transports.File({ filename: "combined.log" }),
   ],
 });
 
-// Create a session cache in order to reuse cookies from existing user sessions. 
+// Create a session cache in order to reuse cookies from existing user sessions.
 let sessionCache = [];
 
 let browser;
@@ -39,13 +39,13 @@ const initBrowser = async () => {
   // Need to specify chrome executable path when running in docker container
   if (process.env.DOCKER) {
     browser = await launch({
-     /*  headless: false, */
+      /*  headless: false, */
       executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox", "--disable-gpu"],
     });
   } else {
     browser = await launch({
-     /*  headless: false, */
+      /*  headless: false, */
       args: ["--no-sandbox", "--disable-gpu"],
     });
   }
@@ -77,7 +77,7 @@ app.post("/screenshot", async (req, res) => {
     res.status(400).send("Browser starting, please refresh in a few seconds");
   }
 
-  // Get ticket using QPS API 
+  // Get ticket using QPS API
   let ticket;
   if (req.body.userId && req.body.userDirectory) {
     try {
@@ -95,8 +95,7 @@ app.post("/screenshot", async (req, res) => {
     res.status(400).send("Error: userId and / or userDirectory not supplied");
   }
 
-
-  // Append ticket to page URL for intitial authentication
+  // Append ticket to page URL for initial authentication
   // If successful, this will result in a session cookie being returned with the page request
   // Note: Although the ticket is appended to every request, it will be ignored if there is already a valid session cookie present
   let adjustedUrl = new URL(req.body.url);
@@ -127,7 +126,7 @@ app.post("/screenshot", async (req, res) => {
     ); */
 
   // Adding Xrf key to request
- /*  await page.setExtraHTTPHeaders({
+  /*  await page.setExtraHTTPHeaders({
     "X-Qlik-Xrfkey": "abcdefghijklmnop",
   }); */
 
@@ -207,13 +206,10 @@ app.post("/screenshot", async (req, res) => {
   // Get current page cookies
   const cookies = await page.cookies();
 
-  // Generic Qlik session cookie name
-  let cookieName = "X-Qlik-Session";
-
-  // Append virtual proxy suffix to cookie name if present
-  /*   if (process.env.QLIK_VP && process.env.QLIK_VP.length > 0) {
-    cookieName = `X-Qlik-Session-${process.env.QLIK_VP}`;
-  } */
+  // Set Qlik session cookie name
+  let cookieName = process.env.QLIK_SESSION_COOKIE_NAME
+    ? process.env.QLIK_SESSION_COOKIE_NAME
+    : "X-Qlik-Session";
 
   // Get the current Qlik session cookie (if present)
   let tempSessionCookie = cookies.find((cookie) => cookie.name === cookieName);
@@ -226,7 +222,6 @@ app.post("/screenshot", async (req, res) => {
   ) {
     tempSession.sessionCookie = tempSessionCookie;
   }
-
 
   // Add / replace session for user in cache
   if (tempSession) {
@@ -263,24 +258,6 @@ app.get("/healthz", (req, res) => {
   res.json({
     alive: true,
   });
-});
-
-app.get("/login", async function (req, res, next) {
-  let userId = "rellisbrown@calibrateconsulting.com";
-  let userDirectory = "CALIBRATE";
-
-  let ticket;
-  try {
-    ticket = await getTicket({
-      userId,
-      userDirectory,
-      logger,
-    });
-  } catch (e) {
-    logger.info(e);
-  }
-
-  logger.debug(ticket);
 });
 
 const PORT = process.env.PORT || 8000;
