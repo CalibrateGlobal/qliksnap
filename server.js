@@ -4,7 +4,7 @@ import cors from "cors";
 import { createServer } from "http";
 import { createServer as createServerHTTPS } from "https";
 import { readFileSync } from "fs";
-import { join } from "path";
+import { resolve } from "path";
 import { launch } from "puppeteer";
 import { createLogger, transports as _transports } from "winston";
 import getTicket from "./lib/qlikFunctions.js";
@@ -24,8 +24,7 @@ app.use(
 const logger = createLogger({
  /*  level: "debug", */
   transports: [
-    new _transports.Console(),
-    new _transports.File({ filename: "combined.log" }),
+    new _transports.Console()
   ],
 });
 
@@ -261,7 +260,7 @@ app.get("/healthz", (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-const environments = ["dev", "test", "preprod", "prod"];
+const environments = ["dev", "test", "preprod", "production"];
 
 let server;
 let host;
@@ -271,8 +270,7 @@ const deployedEnv = process.env.NODE_ENV || "testing";
 
 if (environments.includes(deployedEnv)) {
   const HTTPS_SSL_KEY_PASS = process.env.HTTPS_SSL_KEY_PASS || "";
-  const HTTPS_SSL_CERT =
-    process.env.HTTPS_SSL_CERT || join(__dirname, "./openssl-https.cert");
+  const HTTPS_SSL_CERT = resolve(process.env.HTTPS_SSL_CERT_PATH, "server.pfx");
 
   const options = {
     passphrase: HTTPS_SSL_KEY_PASS ? HTTPS_SSL_KEY_PASS : "",

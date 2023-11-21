@@ -2,4 +2,4 @@
 node_modules
 certs
 .pem
-combined.log
+logs
