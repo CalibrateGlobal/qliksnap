@@ -1,15 +1,17 @@
-require("dotenv").config();
-const express = require("express");
-var cors = require("cors");
-const http = require("http");
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
-const puppeteer = require("puppeteer");
+import "dotenv/config";
+import express, { json } from "express";
+import cors from "cors";
+import { createServer } from "http";
+import { createServer as createServerHTTPS } from "https";
+import { readFileSync } from "fs";
+import { join } from "path";
+import { launch } from "puppeteer";
+import { createLogger, transports as _transports } from "winston";
+import getTicket from "./lib/qlikFunctions.js";
 
 const app = express();
 
-app.use(express.json());
+app.use(json());
 
 app.use(
   cors({
@@ -18,8 +20,17 @@ app.use(
   })
 );
 
-// Use a single session for all requests and reuse session cookie until it expires
-let sessionCookie = {};
+// Set up logging
+const logger = createLogger({
+ /*  level: "debug", */
+  transports: [
+    new _transports.Console(),
+    new _transports.File({ filename: "combined.log" }),
+  ],
+});
+
+// Create a session cache in order to reuse cookies from existing user sessions.
+let sessionCache = [];
 
 let browser;
 
@@ -27,14 +38,14 @@ let browser;
 const initBrowser = async () => {
   // Need to specify chrome executable path when running in docker container
   if (process.env.DOCKER) {
-    browser = await puppeteer.launch({
-      headless: true,
+    browser = await launch({
+      /*  headless: false, */
       executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox", "--disable-gpu"],
     });
   } else {
-    browser = await puppeteer.launch({
-      headless: true,
+    browser = await launch({
+      /*  headless: false, */
       args: ["--no-sandbox", "--disable-gpu"],
     });
   }
@@ -45,6 +56,8 @@ initBrowser();
 
 /**
  * @typedef {object} RequestBody
+ * @param {string} userId - the userId of the user for whom the session will be created
+ * @param {string} userDirectory - the userDirectory of the user for whom the session will be created
  * @param {string} url - the single integration URL, including all required url parameters (such as selections etc.)
  * @param {string} vpHeight - the height of the snapshot viewport
  * @param {string} vpWidth - the width of the snapshot viewport
@@ -60,10 +73,35 @@ initBrowser();
  * @param {object} res - Response object
  */
 app.post("/screenshot", async (req, res) => {
-  if(!browser.connected) {
-    res.status(400).send('Browser starting, please refresh in a few seconds');
+  if (!browser.connected) {
+    res.status(400).send("Browser starting, please refresh in a few seconds");
   }
-  console.log("Taking screenshot");
+
+  // Get ticket using QPS API
+  let ticket;
+  if (req.body.userId && req.body.userDirectory) {
+    try {
+      ticket = await getTicket({
+        userId: req.body.userId,
+        userDirectory: req.body.userDirectory,
+        logger,
+      });
+    } catch (e) {
+      logger.error(e);
+      res.status(500).send("Error retrieving ticket");
+    }
+  } else {
+    logger.error("Error: userId and / or userDirectory not supplied");
+    res.status(400).send("Error: userId and / or userDirectory not supplied");
+  }
+
+  // Append ticket to page URL for initial authentication
+  // If successful, this will result in a session cookie being returned with the page request
+  // Note: Although the ticket is appended to every request, it will be ignored if there is already a valid session cookie present
+  let adjustedUrl = new URL(req.body.url);
+  adjustedUrl.searchParams.append("QlikTicket", ticket);
+
+  logger.info("Taking screenshot");
 
   // How to check for open page instances / tabs
   // const openPages = await browser.pages();
@@ -87,20 +125,20 @@ app.post("/screenshot", async (req, res) => {
       console.log(`${request.failure().errorText} ${request.url()}`)
     ); */
 
-  // Adding authorisation header and Xrf key to request
-  // This will create a session for the user associated with the "QLIK_TOKEN" jwt
-  await page.setExtraHTTPHeaders({
-    Authorization: `Bearer ${process.env.QLIK_TOKEN}`,
+  // Adding Xrf key to request
+  /*  await page.setExtraHTTPHeaders({
     "X-Qlik-Xrfkey": "abcdefghijklmnop",
-  });
-  // Note: It is necessary to include the Authorisation header in every request in order to handle situations in which an existing session cookie
-  // may no longer be valid. The Auth header ensures that a new session cookie will be appended to the page in this scenario (which will then
-  // replace the session cookie stored above for the purpose of reusing sessions)
+  }); */
 
   // If a session cookie exists, add it to the request
   // This ensures that the same session is used (rather than creating a new session for each request and exceeding the Qlik session limit)
-  if (sessionCookie && sessionCookie.value) {
-    await page.setCookie(sessionCookie);
+
+  let tempSession = sessionCache.find(
+    (session) => session.userId === req.body.userId
+  );
+
+  if (tempSession && tempSession.sessionCookie) {
+    await page.setCookie(tempSession.sessionCookie);
   }
 
   // How to check request headers
@@ -110,7 +148,7 @@ app.post("/screenshot", async (req, res) => {
 
   // Navigate the page to the URL supplied in the req body
   await page.goto(
-    req.body.url,
+    adjustedUrl,
     // Wait for network activity to cease, as well as "load" and "domcontentloaded" events to fire before proceeding
     { waitUntil: ["networkidle0", "load", "domcontentloaded"] }
   );
@@ -141,7 +179,7 @@ app.post("/screenshot", async (req, res) => {
       { timeout: req.body.timeout ? req.body.timeout : 10000 }
     );
   } catch (e) {
-    console.log("Error waiting for Qlik loading screen to disappear");
+    logger.error("Error waiting for Qlik loading screen to disappear");
   }
 
   // Iterate through selectors in exclusionArray
@@ -155,7 +193,7 @@ app.post("/screenshot", async (req, res) => {
         // Use evaluate method to remove element
         await element.evaluate((el) => el.remove());
       } catch (e) {
-        console.log(`Error removing selector: ${item}`, e);
+        logger.error(`Error removing selector: ${item}`, e);
       }
     }
   }
@@ -168,28 +206,34 @@ app.post("/screenshot", async (req, res) => {
   // Get current page cookies
   const cookies = await page.cookies();
 
-  // Generic Qlik session cookie name
-  let cookieName = "X-Qlik-Session";
-
-  // Append virtual proxy suffix to cookie name if present
-  if (process.env.QLIK_VP && process.env.QLIK_VP.length > 0) {
-    cookieName = `X-Qlik-Session-${process.env.QLIK_VP}`;
-  }
+  // Set Qlik session cookie name
+  let cookieName = process.env.QLIK_SESSION_COOKIE_NAME
+    ? process.env.QLIK_SESSION_COOKIE_NAME
+    : "X-Qlik-Session";
 
   // Get the current Qlik session cookie (if present)
   let tempSessionCookie = cookies.find((cookie) => cookie.name === cookieName);
 
   // Replace session cookie if value does not match current page session cookie
   if (
-    (sessionCookie &&
-      sessionCookie.value &&
-      tempSessionCookie.value !== sessionCookie.value) ||
-    !sessionCookie.value ||
-    !sessionCookie
+    tempSession &&
+    tempSessionCookie &&
+    tempSessionCookie.value !== tempSession.sessionCookie.value
   ) {
-    if (tempSessionCookie) {
-      sessionCookie = tempSessionCookie;
-    }
+    tempSession.sessionCookie = tempSessionCookie;
+  }
+
+  // Add / replace session for user in cache
+  if (tempSession) {
+    const sessionIndex = sessionCache.findIndex(
+      (session) => session.userId === tempSession.userId
+    );
+    sessionCache[sessionIndex] = tempSession;
+  } else if (req.body.userId && tempSessionCookie) {
+    sessionCache.push({
+      userId: req.body.userId,
+      sessionCookie: tempSessionCookie,
+    });
   }
 
   // Create screenshot image buffer
@@ -198,7 +242,7 @@ app.post("/screenshot", async (req, res) => {
   // Send image buffer in response
   res.set("Content-Type", "image/png");
   res.send(imageBuffer);
-  console.log("Screenshot taken");
+  logger.info("Screenshot taken");
 
   // Close current browser page
   await page.close();
@@ -228,25 +272,25 @@ const deployedEnv = process.env.NODE_ENV || "testing";
 if (environments.includes(deployedEnv)) {
   const HTTPS_SSL_KEY_PASS = process.env.HTTPS_SSL_KEY_PASS || "";
   const HTTPS_SSL_CERT =
-    process.env.HTTPS_SSL_CERT || path.join(__dirname, "./openssl-https.cert");
+    process.env.HTTPS_SSL_CERT || join(__dirname, "./openssl-https.cert");
 
   const options = {
     passphrase: HTTPS_SSL_KEY_PASS ? HTTPS_SSL_KEY_PASS : "",
-    pfx: HTTPS_SSL_CERT ? fs.readFileSync(HTTPS_SSL_CERT) : "",
+    pfx: HTTPS_SSL_CERT ? readFileSync(HTTPS_SSL_CERT) : "",
   };
 
-  server = https.createServer(options, app);
+  server = createServerHTTPS(options, app);
   host = "https";
   server.listen(PORT, function () {
-    console.log(
+    logger.info(
       `Mashup Backend | Server started with protocol ${host} - Using port ${PORT}.`
     );
   });
 } else {
-  server = http.createServer(options, app);
+  server = createServer(options, app);
   host = "http";
   server.listen(PORT, function () {
-    console.log(
+    logger.info(
       `Mashup Backend | Server started with protocol ${host} - Using port ${PORT}.`
     );
   });

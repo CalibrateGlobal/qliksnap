@@ -34,33 +34,31 @@ A Node application allowing users to create a "snapshot" of a Qlik single integr
 
 The application's configuration is set in the .env file located at the root of the repository. This file should contain values for:
 
-- `QLIK_TOKEN`: The value of the authentication jwt to be appended to request headers
-- `QLIK_VP`: The name of the Qlik virtual proxy being used
+- `QLIK_HOSTNAME`: The hostname of the Qlik server utilised for the QPS rest API
+- `QLIK_QPS_PORT`: The QPS rest API port (default = 4243)
+- `QLIK_SESSION_COOKIE_NAME`: The Qlik session cookie name (default = X-Qlik-Session)
 - `ALLOWED_ORIGIN`: The origin of requests being made to the application
 - `PORT`: Specify the port the server should listen to (default: `8000`)
+- `QLIK_CLIENT_CERT_PATH`: Path to the Qlik client certificates used for QPS API authentication
+- `QLIK_AUTH_USER_DIRECTORY`: User directory of a user with privileges to interact with QPS rest API
+- `QLIK_AUTH_USER_ID`: User Id of a user with privileges to interact with QPS rest API
+- `HTTPS_SSL_KEY_PASS`: Password for Server SSL certificate
+- `HTTPS_SSL_CERT`: Path to server SSL certificate
+- `NODE_ENV`: (Optional) Allows node environment to be manually set (A value of `testing` will create an http server, rather than https server with certificates)
 
 The `.env-axample` file in the root of the repository contains examples of these values.
 
-### Qlik Virtual Proxy Configuration
+### Qlik Certificate Configuration
 
-- Create a Qlik Virtual Proxy with the appropriate Name, Prefix, Session cookie header name etc:
-  - https://help.qlik.com/en-US/sense-admin/August2023/Subsystems/DeployAdministerQSE/Content/Sense_DeployAdminister/QSEoW/Administer_QSEoW/Managing_QSEoW/create-virtual-proxy.htm
-  - The default prefix and session cookie header name are `jwt` and `X-Qlik-Session-jwt` respectively
-  - Ensure that the newly created Virtual Proxy is linked to an existing Proxy
-- Generate a valid TLS certificate for the target environment (Note: Using an existing Qlik server certificate is the most straightforward and reliable way to handle this)
-- Follow step 1 in the guide below to set up JWT authentication for the Virtual Proxy:
-  - https://community.qlik.com/t5/Official-Support-Articles/Qlik-Sense-How-to-set-up-JWT-authentication/ta-p/1716226#toc-hId-1254428716
-  - For simpler installations / testing purposes, existing Qlik configured certificates can be used as described in the guide
-- Generate a JWT using the above certificate for the intended user:
-  - Use an appropriate js tool / dependency to generate the JWT or use `jwt.io` as described in step 2 of the above guide
-  - The PAYLOAD should reflect the JWT attributes specified in the Virtual Proxy Setup (i.e. `userId` and `userDirectory`)
-  - This JWT should now be appended to the Authorisation header of all Qlik page requests (i.e. `"Authorisation: Bearer <jwt>"`)
-- Testing the JWT:
-  - Use an extension such as `Modheader` to append the correct Authorisation header to a request made to view the desired Qlik Sense dashboard (with the VP prefix inserted into the URL)
-  - Use `curl` to make a GET request with the required Authorisation header to a Qlik API (with the VP prefix inserted into the URL)
-  - Use `Postman` etc. to make a GET request with the required Authorisation header to a Qlik API (with the VP prefix inserted into the URL)
-  - Make a request to the Qliksnap backend and verify that the correct response is received
-  
+- Interaction with the Qlik QPS rest API (for the purpose of retrieving a ticket for the frontend user of the application) requires the use of Qlik client certificates:
+  - `client.pem`
+  - `client_key.pem`
+- These certificates should be located at the following path on the Qlik server to which the API requests are being made:
+  - `/Qlik/Sense/Repository/Exported Certificates/.Local Certificates`
+- Once retrieved, the certificates should be placed in a location on the backend server which is accessible to the Qliksnap service (preferably within the project's `./certs` folder)
+- The `QLIK_CLIENT_CERT_PATH` env variable above specifies the location that the application will look for the required certificates
+- Note: The Qlik server to which the QPS rest API requests are being made must be configured to have the QPS rest API port open (by default, this is port 4243, but can be specified using the `QLIK_QPS_PORT` env variable above)
+
 ## Usage
 
 - The application utilises a single endpoint:
@@ -69,6 +67,8 @@ The `.env-axample` file in the root of the repository contains examples of these
 
 - Requests to this endpoint should be made via the 'POST' method and include a body specifing:
 
+  - userId - The userId of the user interacting with the frontend application
+  - userDirectory - The userDirectory of the user interacting with the frontend application
   - url - the single integration URL, including all required url parameters (such as selections etc.)
   - vpHeight - the height of the headless browser viewport
   - vpWidth - the width of the headless browser viewport
