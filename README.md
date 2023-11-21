@@ -45,6 +45,7 @@ The application's configuration is set in the .env file located at the root of t
 - `HTTPS_SSL_KEY_PASS`: Password for Server SSL certificate
 - `HTTPS_SSL_CERT`: Path to server SSL certificate
 - `NODE_ENV`: Allows node environment to be manually set (A value of `testing` will create an http server, rather than https server with certificates)
+- `EXEC_PATH`: (Optional) - Path to chrome executable, if not using default Puppeteer chromium installation
 
 The `.env-axample` file in the root of the repository contains examples of these values.
 

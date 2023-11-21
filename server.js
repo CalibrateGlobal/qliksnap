@@ -22,10 +22,8 @@ app.use(
 
 // Set up logging
 const logger = createLogger({
- /*  level: "debug", */
-  transports: [
-    new _transports.Console()
-  ],
+  /*  level: "debug", */
+  transports: [new _transports.Console()],
 });
 
 // Create a session cache in order to reuse cookies from existing user sessions.
@@ -40,6 +38,12 @@ const initBrowser = async () => {
     browser = await launch({
       /*  headless: false, */
       executablePath: "/usr/bin/google-chrome",
+      args: ["--no-sandbox", "--disable-gpu"],
+    });
+  } else if (process.env.EXEC_PATH) {
+    browser = await launch({
+      /*  headless: false, */
+      executablePath: process.env.EXEC_PATH,
       args: ["--no-sandbox", "--disable-gpu"],
     });
   } else {
