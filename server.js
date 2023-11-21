@@ -3,8 +3,8 @@ import express, { json } from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { createServer as createServerHTTPS } from "https";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync, existsSync, mkdirSync } from "fs";
+import { resolve, join, isAbsolute } from "path";
 import { launch } from "puppeteer";
 import { createLogger, transports as _transports } from "winston";
 import getTicket from "./lib/qlikFunctions.js";
@@ -20,12 +20,28 @@ app.use(
   })
 );
 
+// Get the log folder from the environment variable or use a default value
+const logFolder = process.env.LOG_FOLDER || './logs';
+
+const createLogFolder = (logFolder) => {
+  if (!existsSync(logFolder)) {
+    mkdirSync(logFolder, { recursive: true });
+  }
+};
+
+const absoluteLogFolder = isAbsolute(logFolder)
+  ? logFolder
+  : join(__dirname, logFolder);
+
+// Create the log folder if it doesn't exist
+createLogFolder(absoluteLogFolder);
+
 // Set up logging
 const logger = createLogger({
  /*  level: "debug", */
   transports: [
     new _transports.Console(),
-    new _transports.File({ filename: "combined.log" }),
+    new _transports.File({ filename: join(absoluteLogFolder, 'combined.log') }),
   ],
 });
 
@@ -271,8 +287,7 @@ const deployedEnv = process.env.NODE_ENV || "testing";
 
 if (environments.includes(deployedEnv)) {
   const HTTPS_SSL_KEY_PASS = process.env.HTTPS_SSL_KEY_PASS || "";
-  const HTTPS_SSL_CERT =
-    process.env.HTTPS_SSL_CERT || join(__dirname, "./openssl-https.cert");
+  const HTTPS_SSL_CERT = resolve(process.env.HTTPS_SSL_CERT, "server.pfx");
 
   const options = {
     passphrase: HTTPS_SSL_KEY_PASS ? HTTPS_SSL_KEY_PASS : "",
