@@ -2,11 +2,9 @@ import "dotenv/config";
 import express, { json } from "express";
 import cors from "cors";
 import { createServer } from "http";
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { createServer as createServerHTTPS } from "https";
-import { readFileSync, existsSync, mkdirSync } from "fs";
-import { resolve, join, isAbsolute } from "path";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 import { launch } from "puppeteer";
 import { createLogger, transports as _transports } from "winston";
 import getTicket from "./lib/qlikFunctions.js";
@@ -22,32 +20,11 @@ app.use(
   })
 );
 
-// Get the log folder from the environment variable or use a default value
-const logFolder = process.env.LOG_FOLDER || './logs';
-
-const __filename = fileURLToPath(import.meta.url);
-
-const __dirname = path.dirname(__filename);
-
-const createLogFolder = (logFolder) => {
-  if (!existsSync(logFolder)) {
-    mkdirSync(logFolder, { recursive: true });
-  }
-};
-
-const absoluteLogFolder = isAbsolute(logFolder)
-  ? logFolder
-  : join(__dirname, logFolder);
-
-// Create the log folder if it doesn't exist
-createLogFolder(absoluteLogFolder);
-
 // Set up logging
 const logger = createLogger({
  /*  level: "debug", */
   transports: [
-    new _transports.Console(),
-    new _transports.File({ filename: join(absoluteLogFolder, 'combined.log') }),
+    new _transports.Console()
   ],
 });
 
@@ -283,7 +260,7 @@ app.get("/healthz", (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-const environments = ["dev", "test", "preprod", "prod"];
+const environments = ["dev", "test", "preprod", "production"];
 
 let server;
 let host;
@@ -293,7 +270,7 @@ const deployedEnv = process.env.NODE_ENV || "testing";
 
 if (environments.includes(deployedEnv)) {
   const HTTPS_SSL_KEY_PASS = process.env.HTTPS_SSL_KEY_PASS || "";
-  const HTTPS_SSL_CERT = resolve(process.env.HTTPS_SSL_CERT, "server.pfx");
+  const HTTPS_SSL_CERT = resolve(process.env.HTTPS_SSL_CERT_PATH, "server.pfx");
 
   const options = {
     passphrase: HTTPS_SSL_KEY_PASS ? HTTPS_SSL_KEY_PASS : "",
