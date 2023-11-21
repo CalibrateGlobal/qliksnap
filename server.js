@@ -2,6 +2,8 @@ import "dotenv/config";
 import express, { json } from "express";
 import cors from "cors";
 import { createServer } from "http";
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createServer as createServerHTTPS } from "https";
 import { readFileSync, existsSync, mkdirSync } from "fs";
 import { resolve, join, isAbsolute } from "path";
@@ -22,6 +24,10 @@ app.use(
 
 // Get the log folder from the environment variable or use a default value
 const logFolder = process.env.LOG_FOLDER || './logs';
+
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 
 const createLogFolder = (logFolder) => {
   if (!existsSync(logFolder)) {
