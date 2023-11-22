@@ -162,32 +162,57 @@ app.post("/screenshot", async (req, res) => {
     height: req.body.vpHeight,
   });
 
+  const urlSplit = req.body.url.split("/");
+
   // Wait for Qlik loading screen to disappear from page before continuing
-  try {
-    await page.waitForFunction(
-      () => {
-        // Get loading indicator element
-        const loadIndicator = document.getElementsByClassName(
-          "single-load-indicator"
-        )[0];
-        // Return true (and exit waitFor function) if the display property of this element is set to 'none'
-        if (
-          window.getComputedStyle(loadIndicator).getPropertyValue("display") ===
-          "none"
-        ) {
-          return true;
-        }
-      },
-      // Timeout value for wait function, default of 10000 ms
-      { timeout: req.body.timeout ? req.body.timeout : 10000 }
-    );
-  } catch (e) {
-    logger.error("Error waiting for Qlik loading screen to disappear");
+
+  if (urlSplit.includes("single")) {
+    // Case for single integration URL
+    try {
+      await page.waitForFunction(
+        () => {
+          // Get loading indicator element
+          const loadIndicator = document.getElementsByClassName(
+            "single-load-indicator"
+          )[0];
+          // Return true (and exit waitFor function) if the display property of this element is set to 'none'
+          if (
+            window
+              .getComputedStyle(loadIndicator)
+              .getPropertyValue("display") === "none"
+          ) {
+            return true;
+          }
+        },
+        // Timeout value for wait function, default of 10000 ms
+        { timeout: req.body.timeout ? req.body.timeout : 10000 }
+      );
+    } catch (e) {
+      logger.error("Error waiting for Qlik loading screen to disappear");
+    }
+  } else {
+    // Case for standard URL
+    try {
+      await page.waitForFunction(
+        () => {
+          // Get loading indicator element
+          const loadIndicator = document.getElementById("qv-init-ui-blocker");
+          // Return true (and exit waitFor function) if the loading indicator is no longer present
+          if (!loadIndicator) {
+            return true;
+          }
+        },
+        // Timeout value for wait function, default of 10000 ms
+        { timeout: req.body.timeout ? req.body.timeout : 10000 }
+      );
+    } catch (e) {
+      logger.error("Error waiting for Qlik loading screen to disappear");
+    }
   }
 
   // Iterate through selectors in exclusionArray
   if (req.body.exclusionArray && req.body.exclusionArray.length > 0) {
-    for (item of req.body.exclusionArray) {
+    for (const item of req.body.exclusionArray) {
       try {
         // Query page and wait for element handle
         const element = await page.waitForSelector(item, {
