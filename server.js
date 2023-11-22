@@ -78,6 +78,7 @@ initBrowser();
 app.post("/screenshot", async (req, res) => {
   if (!browser.connected) {
     res.status(400).send("Browser starting, please refresh in a few seconds");
+    return;
   }
 
   // Get ticket using QPS API
@@ -92,10 +93,12 @@ app.post("/screenshot", async (req, res) => {
     } catch (e) {
       logger.error(e);
       res.status(500).send("Error retrieving ticket");
+      return;
     }
   } else {
     logger.error("Error: userId and / or userDirectory not supplied");
     res.status(400).send("Error: userId and / or userDirectory not supplied");
+    return;
   }
 
   // Append ticket to page URL for initial authentication
@@ -157,37 +160,74 @@ app.post("/screenshot", async (req, res) => {
   );
 
   // Set viewport dimensions based an values in req body
-  await page.setViewport({
-    width: req.body.vpWidth,
-    height: req.body.vpHeight,
-  });
+  if (req.body.vpWidth && req.body.vpHeight) {
+    await page.setViewport({
+      width: req.body.vpWidth,
+      height: req.body.vpHeight,
+    });
+  } else {
+    logger.error("Error: vpWidth and / or vpHeight not supplied");
+    res.status(400).send("Error: vpWidth and / or vpHeight not supplied");
+    return;
+  }
 
-  // Wait for Qlik loading screen to disappear from page before continuing
-  try {
-    await page.waitForFunction(
-      () => {
-        // Get loading indicator element
-        const loadIndicator = document.getElementsByClassName(
-          "single-load-indicator"
-        )[0];
-        // Return true (and exit waitFor function) if the display property of this element is set to 'none'
-        if (
-          window.getComputedStyle(loadIndicator).getPropertyValue("display") ===
-          "none"
-        ) {
-          return true;
-        }
-      },
-      // Timeout value for wait function, default of 10000 ms
-      { timeout: req.body.timeout ? req.body.timeout : 10000 }
-    );
-  } catch (e) {
-    logger.error("Error waiting for Qlik loading screen to disappear");
+  if (req.body.url) {
+    const urlSplit = req.body.url.split("/");
+
+    // Wait for Qlik loading screen to disappear from page before continuing
+
+    if (urlSplit.includes("single")) {
+      // Case for single integration URL
+      try {
+        await page.waitForFunction(
+          () => {
+            // Get loading indicator element
+            const loadIndicator = document.getElementsByClassName(
+              "single-load-indicator"
+            )[0];
+            // Return true (and exit waitFor function) if the display property of this element is set to 'none'
+            if (
+              window
+                .getComputedStyle(loadIndicator)
+                .getPropertyValue("display") === "none"
+            ) {
+              return true;
+            }
+          },
+          // Timeout value for wait function, default of 10000 ms
+          { timeout: req.body.timeout ? req.body.timeout : 10000 }
+        );
+      } catch (e) {
+        logger.error("Error waiting for Qlik loading screen to disappear");
+      }
+    } else {
+      // Case for standard URL
+      try {
+        await page.waitForFunction(
+          () => {
+            // Get loading indicator element
+            const loadIndicator = document.getElementById("qv-init-ui-blocker");
+            // Return true (and exit waitFor function) if the loading indicator is no longer present
+            if (!loadIndicator) {
+              return true;
+            }
+          },
+          // Timeout value for wait function, default of 10000 ms
+          { timeout: req.body.timeout ? req.body.timeout : 10000 }
+        );
+      } catch (e) {
+        logger.error("Error waiting for Qlik loading screen to disappear");
+      }
+    }
+  } else {
+    logger.error("Error: Qlik url not supplied");
+    res.status(400).send("Error: Qlik url not supplied");
+    return;
   }
 
   // Iterate through selectors in exclusionArray
   if (req.body.exclusionArray && req.body.exclusionArray.length > 0) {
-    for (item of req.body.exclusionArray) {
+    for (const item of req.body.exclusionArray) {
       try {
         // Query page and wait for element handle
         const element = await page.waitForSelector(item, {
