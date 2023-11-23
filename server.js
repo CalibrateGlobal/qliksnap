@@ -83,23 +83,34 @@ app.post("/screenshot", async (req, res) => {
     return;
   }
 
-  // Get ticket using QPS API
-  let ticket;
-  if (req.body.userId && req.body.userDirectory) {
-    try {
-      ticket = await getTicket({
-        userId: req.body.userId,
-        userDirectory: req.body.userDirectory,
-        logger,
-      });
-    } catch (e) {
-      logger.error("getting user ticket", e);
-      res.status(500).send("Error retrieving ticket");
+  const validationArray = [
+    "userId",
+    "userDirectory",
+    "vpWidth",
+    "vpHeight",
+    "url",
+  ];
+
+  for (const item of validationArray) {
+    if (!req.body[item]) {
+      logger.error(`Error: ${item} not supplied`);
+      res.status(400).send(`Error: ${item} not supplied`);
       return;
     }
-  } else {
-    logger.error("Error: userId and / or userDirectory not supplied");
-    res.status(400).send("Error: userId and / or userDirectory not supplied");
+  }
+
+  // Get ticket using QPS API
+  let ticket;
+
+  try {
+    ticket = await getTicket({
+      userId: req.body.userId,
+      userDirectory: req.body.userDirectory,
+      logger,
+    });
+  } catch (e) {
+    logger.error(`Error retrieving ticket: ${e}`);
+    res.status(500).send("Error retrieving ticket");
     return;
   }
 
@@ -153,16 +164,11 @@ app.post("/screenshot", async (req, res) => {
   // });
 
   // Set viewport dimensions based an values in req body
-  if (req.body.vpWidth && req.body.vpHeight) {
-    await page.setViewport({
-      width: req.body.vpWidth,
-      height: req.body.vpHeight,
-    });
-  } else {
-    logger.error("Error: vpWidth and / or vpHeight not supplied");
-    res.status(400).send("Error: vpWidth and / or vpHeight not supplied");
-    return;
-  }
+
+  await page.setViewport({
+    width: req.body.vpWidth,
+    height: req.body.vpHeight,
+  });
 
   page.setCacheEnabled(false);
 
@@ -173,58 +179,52 @@ app.post("/screenshot", async (req, res) => {
     { waitUntil: ["networkidle0", "load", "domcontentloaded"] }
   );
 
-  if (req.body.url) {
-    const urlSplit = req.body.url.split("/");
+  const urlSplit = req.body.url.split("/");
 
-    // Wait for Qlik loading screen to disappear from page before continuing
+  // Wait for Qlik loading screen to disappear from page before continuing
 
-    if (urlSplit.includes("single")) {
-      // Case for single integration URL
-      try {
-        await page.waitForFunction(
-          () => {
-            // Get loading indicator element
-            const loadIndicator = document.getElementsByClassName(
-              "single-load-indicator"
-            )[0];
-            // Return true (and exit waitFor function) if the display property of this element is set to 'none'
-            if (
-              window
-                .getComputedStyle(loadIndicator)
-                .getPropertyValue("display") === "none"
-            ) {
-              return true;
-            }
-          },
-          // Timeout value for wait function, default of 10000 ms
-          { timeout: req.body.timeout ? req.body.timeout : 10000 }
-        );
-      } catch (e) {
-        logger.error("Error waiting for Qlik loading screen to disappear", e);
-      }
-    } else {
-      // Case for standard URL
-      try {
-        await page.waitForFunction(
-          () => {
-            // Get loading indicator element
-            const loadIndicator = document.getElementById("qv-init-ui-blocker");
-            // Return true (and exit waitFor function) if the loading indicator is no longer present
-            if (!loadIndicator) {
-              return true;
-            }
-          },
-          // Timeout value for wait function, default of 10000 ms
-          { timeout: req.body.timeout ? req.body.timeout : 10000 }
-        );
-      } catch (e) {
-        logger.error("Error waiting for Qlik loading screen to disappear", e);
-      }
+  if (urlSplit.includes("single")) {
+    // Case for single integration URL
+    try {
+      await page.waitForFunction(
+        () => {
+          // Get loading indicator element
+          const loadIndicator = document.getElementsByClassName(
+            "single-load-indicator"
+          )[0];
+          // Return true (and exit waitFor function) if the display property of this element is set to 'none'
+          if (
+            window
+              .getComputedStyle(loadIndicator)
+              .getPropertyValue("display") === "none"
+          ) {
+            return true;
+          }
+        },
+        // Timeout value for wait function, default of 10000 ms
+        { timeout: req.body.timeout ? req.body.timeout : 10000 }
+      );
+    } catch (e) {
+      logger.error(`Error waiting for Qlik loading screen to disappear: ${e}`);
     }
   } else {
-    logger.error("Error: Qlik url not supplied");
-    res.status(400).send("Error: Qlik url not supplied");
-    return;
+    // Case for standard URL
+    try {
+      await page.waitForFunction(
+        () => {
+          // Get loading indicator element
+          const loadIndicator = document.getElementById("qv-init-ui-blocker");
+          // Return true (and exit waitFor function) if the loading indicator is no longer present
+          if (!loadIndicator) {
+            return true;
+          }
+        },
+        // Timeout value for wait function, default of 10000 ms
+        { timeout: req.body.timeout ? req.body.timeout : 10000 }
+      );
+    } catch (e) {
+      logger.error(`Error waiting for Qlik loading screen to disappear: ${e}`);
+    }
   }
 
   // Iterate through selectors in exclusionArray
