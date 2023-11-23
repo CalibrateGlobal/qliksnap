@@ -76,6 +76,8 @@ initBrowser();
  * @param {object} res - Response object
  */
 app.post("/screenshot", async (req, res) => {
+  logger.info(`/screenshot request body ${JSON.stringify(req.body)}`);
+  logger.info(`/screenshot request headers ${JSON.stringify(req.headers)}`);
   if (!browser.connected) {
     res.status(400).send("Browser starting, please refresh in a few seconds");
     return;
@@ -117,8 +119,6 @@ app.post("/screenshot", async (req, res) => {
   // Note: Although the ticket is appended to every request, it will be ignored if there is already a valid session cookie present
   let adjustedUrl = new URL(req.body.url);
   adjustedUrl.searchParams.append("QlikTicket", ticket);
-
-  logger.info("Taking screenshot");
 
   // How to check for open page instances / tabs
   // const openPages = await browser.pages();
@@ -169,6 +169,8 @@ app.post("/screenshot", async (req, res) => {
     width: req.body.vpWidth,
     height: req.body.vpHeight,
   });
+
+  page.setCacheEnabled(false);
 
   // Navigate the page to the URL supplied in the req body
   await page.goto(
@@ -243,11 +245,15 @@ app.post("/screenshot", async (req, res) => {
 
   // Introduce additional delay to allow for visualisations to resize after prior loading has taken place...
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  logger.info(`Sleeping for ${req.body.delay || 500}ms `)
   // Default delay of 500 ms
   await delay(req.body.delay ? req.body.delay : 500);
+  logger.info("Awaken");
 
   // Get current page cookies
   const cookies = await page.cookies();
+  logger.info(`cookies found on the page: ${JSON.stringify(cookies)}`)
 
   // Set Qlik session cookie name
   let cookieName = process.env.QLIK_SESSION_COOKIE_NAME
@@ -272,20 +278,25 @@ app.post("/screenshot", async (req, res) => {
       (session) => session.userId === tempSession.userId
     );
     sessionCache[sessionIndex] = tempSession;
+    logger.info("Session cookie stored now");
+
   } else if (req.body.userId && tempSessionCookie) {
     sessionCache.push({
       userId: req.body.userId,
       sessionCookie: tempSessionCookie,
     });
+
+    logger.info("Session cookie not set, unable to store it")
   }
 
   // Create screenshot image buffer
   const imageBuffer = await page.screenshot();
+  logger.info("Screenshot taken")
 
   // Send image buffer in response
   res.set("Content-Type", "image/png");
   res.send(imageBuffer);
-  logger.info("Screenshot taken");
+  logger.info("Response sent back to the client");
 
   // Close current browser page
   await page.close();
