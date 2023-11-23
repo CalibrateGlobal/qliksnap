@@ -109,7 +109,7 @@ app.post("/screenshot", async (req, res) => {
       logger,
     });
   } catch (e) {
-    logger.error(e);
+    logger.error(`Error retrieving ticket: ${e}`);
     res.status(500).send("Error retrieving ticket");
     return;
   }
@@ -205,7 +205,7 @@ app.post("/screenshot", async (req, res) => {
         { timeout: req.body.timeout ? req.body.timeout : 10000 }
       );
     } catch (e) {
-      logger.error("Error waiting for Qlik loading screen to disappear");
+      logger.error(`Error waiting for Qlik loading screen to disappear: ${e}`);
     }
   } else {
     // Case for standard URL
@@ -223,7 +223,7 @@ app.post("/screenshot", async (req, res) => {
         { timeout: req.body.timeout ? req.body.timeout : 10000 }
       );
     } catch (e) {
-      logger.error("Error waiting for Qlik loading screen to disappear");
+      logger.error(`Error waiting for Qlik loading screen to disappear: ${e}`);
     }
   }
 
